@@ -1,2 +1,6 @@
 server:
   port: 8080
+base_url: "https://dummyjson.com"
+spring:
+  main:
+    allow-bean-definition-overriding: true

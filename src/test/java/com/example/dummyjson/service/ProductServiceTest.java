@@ -1,56 +1,34 @@
 package com.example.dummyjson.service;
 
 import com.example.dummyjson.dto.Product;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.web.client.RestTemplate;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(MockitoJUnitRunner.class)
+@SpringBootTest
 public class ProductServiceTest {
 
-    @InjectMocks
+    @Autowired
     private ProductService productService;
-
-    @Mock
-    private RestTemplate restTemplate;
 
     @Test
     public void testGetAllProducts() {
-        Product product1 = new Product();
-        product1.setId(1L);
-        product1.setTitle("Product 1");
+        List<Product> products = productService.getAllProducts();
 
-        Product product2 = new Product();
-        product2.setId(2L);
-        product2.setTitle("Product 2");
-
-        Product[] products = {product1, product2};
-        when(restTemplate.getForObject("https://dummyjson.com/products", Product[].class)).thenReturn(products);
-
-        List<Product> result = productService.getAllProducts();
-        assertEquals(2, result.size());
-        assertEquals("Product 1", result.get(0).getTitle());
+        assertNotNull(products);
+        assert(!products.isEmpty());
     }
 
     @Test
     public void testGetProductById() {
-        Product product = new Product();
-        product.setId(1L);
-        product.setTitle("Product 1");
+        Product product = productService.getProductById(1L);
 
-        when(restTemplate.getForObject("https://dummyjson.com/products/1", Product.class)).thenReturn(product);
-
-        Product result = productService.getProductById(1L);
-        assertEquals("Product 1", result.getTitle());
+        assertNotNull(product);
+        assertEquals(1L, product.getId());
     }
 }

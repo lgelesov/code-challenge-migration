@@ -1,56 +1,52 @@
 package com.example.dummyjson.controller;
 
 import com.example.dummyjson.dto.Product;
-import com.example.dummyjson.service.ProductService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
-import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@SpringBootTest
+@EnableFeignClients(basePackages = "com.example.dummyjson.client")
 public class ProductControllerTest {
 
-    @InjectMocks
+    @Autowired
     private ProductController productController;
-
-    @Mock
-    private ProductService productService;
 
     @Test
     public void testGetAllProducts() {
-        Product product1 = new Product();
-        product1.setId(1L);
-        product1.setTitle("Product 1");
+        // Act
+        List<Product> products = productController.getAllProducts();
 
-        Product product2 = new Product();
-        product2.setId(2L);
-        product2.setTitle("Product 2");
-
-        List<Product> products = Arrays.asList(product1, product2);
-        when(productService.getAllProducts()).thenReturn(products);
-
-        List<Product> result = productController.getAllProducts();
-        assertEquals(2, result.size());
-        assertEquals("Product 1", result.get(0).getTitle());
+        // Assert
+        assertNotNull(products);
+        assertFalse(products.isEmpty());
+        products.forEach(product -> {
+            assertNotNull(product.getId());
+            assertNotNull(product.getTitle());
+            assertNotNull(product.getDescription());
+            assertNotNull(product.getPrice());
+        });
     }
 
     @Test
     public void testGetProductById() {
-        Product product = new Product();
-        product.setId(1L);
-        product.setTitle("Product 1");
+        // Arrange
+        Long productId = 1L;
 
-        when(productService.getProductById(1L)).thenReturn(product);
+        // Act
+        Product product = productController.getProductById(productId);
 
-        Product result = productController.getProductById(1L);
-        assertEquals("Product 1", result.getTitle());
+        // Assert
+        assertNotNull(product);
+        assertEquals(productId, product.getId());
+        assertNotNull(product.getTitle());
+        assertNotNull(product.getDescription());
+        assertNotNull(product.getPrice());
+        assertTrue(product.getPrice() > 0);
     }
 }
